@@ -35,8 +35,7 @@ public class ProductServiceImpl implements ProductService {
         product.setExentaGMF(req.getExentaGMF());
         product.setCliente(cliente);
 
-        // ⚠️ No seteamos estado aquí → lo maneja automáticamente el @PrePersist
-        // product.setEstado(EstadoCuenta.ACTIVA); <-- innecesario
+
 
         Product saved = productRepository.save(product);
         return toResponse(saved);

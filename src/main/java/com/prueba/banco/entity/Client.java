@@ -7,13 +7,13 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Entity
-@Table(name = "clientes") // nombre claro de la tabla en plural
+@Table(name = "clientes")
 @Schema(description = "Entidad que representa un cliente del banco")
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true) // No se muestra en Swagger al crear
+    @Schema(hidden = true)
     private Long id;
 
     @NotBlank(message = "El tipo de identificación no puede estar vacío")

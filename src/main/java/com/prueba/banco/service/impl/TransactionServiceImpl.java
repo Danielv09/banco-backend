@@ -29,17 +29,17 @@ public class TransactionServiceImpl implements TransactionService {
         this.mapper = mapper;
     }
 
-    // --- Consignación ---
+
     @Override
     public TransactionResponse deposit(TransactionRequest req) {
         Product destination = productRepository.findById(req.getCuentaDestinoId())
                 .orElseThrow(() -> new ProductNotFoundException(req.getCuentaDestinoId()));
 
-        // Actualizar saldo
+
         destination.setSaldo(destination.getSaldo().add(req.getMonto()));
         productRepository.save(destination);
 
-        // Registrar transacción
+
         Transaction tx = mapper.toEntity(req, null, destination);
         tx.setSaldoDisponible(destination.getSaldo());
         return mapper.toResponse(transactionRepository.save(tx));
@@ -60,13 +60,13 @@ public class TransactionServiceImpl implements TransactionService {
         origin.setSaldo(origin.getSaldo().subtract(req.getMonto()));
         productRepository.save(origin);
 
-        // Registrar transacción
+
         Transaction tx = mapper.toEntity(req, origin, null);
         tx.setSaldoDisponible(origin.getSaldo());
         return mapper.toResponse(transactionRepository.save(tx));
     }
 
-    // --- Transferencia ---
+
     @Override
     public TransactionResponse transfer(TransactionRequest req) {
         Product origin = productRepository.findById(req.getCuentaOrigenId())
@@ -74,26 +74,26 @@ public class TransactionServiceImpl implements TransactionService {
         Product destination = productRepository.findById(req.getCuentaDestinoId())
                 .orElseThrow(() -> new ProductNotFoundException(req.getCuentaDestinoId()));
 
-        // Validar saldo suficiente
+
         if (origin.getSaldo().compareTo(req.getMonto()) < 0) {
             throw new BusinessRuleException("Saldo insuficiente para realizar la transferencia");
         }
 
-        // Débito en origen
+
         origin.setSaldo(origin.getSaldo().subtract(req.getMonto()));
         productRepository.save(origin);
 
-        // Crédito en destino
+
         destination.setSaldo(destination.getSaldo().add(req.getMonto()));
         productRepository.save(destination);
 
-        // Registrar transacción
+
         Transaction tx = mapper.toEntity(req, origin, destination);
         tx.setSaldoDisponible(origin.getSaldo());
         return mapper.toResponse(transactionRepository.save(tx));
     }
 
-    // --- Listar transacciones por producto destino ---
+
     @Override
     public List<TransactionResponse> listByProduct(Long productId) {
         return transactionRepository.findByCuentaDestinoId(productId).stream()

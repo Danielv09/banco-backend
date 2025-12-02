@@ -16,37 +16,37 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Tipo de transacción: CONSIGNACION, RETIRO, TRANSFERENCIA
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_transaccion", nullable = false)
     @NotNull(message = "El tipo de transacción es obligatorio")
     private TransactionType tipo;
 
-    // Monto de la transacción (siempre positivo)
+
     @Column(name = "monto", precision = 15, scale = 2, nullable = false)
     @NotNull(message = "El monto es obligatorio")
     @Positive(message = "El monto debe ser mayor a 0")
     private BigDecimal monto;
 
-    // Fecha y hora de la transacción
+
     @Column(name = "fecha_transaccion", nullable = false)
     private LocalDateTime fechaTransaccion;
 
-    // Cuenta origen (obligatoria en RETIRO y TRANSFERENCIA)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_id_origen")
     private Product cuentaOrigen;
 
-    // Cuenta destino (obligatoria en CONSIGNACION y TRANSFERENCIA)
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cuenta_id_destino")
     private Product cuentaDestino;
 
-    // Saldo disponible después de la transacción
+
     @Column(name = "saldo_disponible", precision = 15, scale = 2, nullable = false)
     private BigDecimal saldoDisponible;
 
-    // --- Ciclo de vida ---
+
     @PrePersist
     public void prePersist() {
         this.fechaTransaccion = LocalDateTime.now();
@@ -55,7 +55,7 @@ public class Transaction {
         }
     }
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters completos
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

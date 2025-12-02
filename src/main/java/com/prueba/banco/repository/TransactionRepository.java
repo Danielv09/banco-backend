@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    // Busca todas las transacciones asociadas a una cuenta destino por su ID
+
     List<Transaction> findByCuentaDestinoId(Long productId);
 }

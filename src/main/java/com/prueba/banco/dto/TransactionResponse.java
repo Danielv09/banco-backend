@@ -14,7 +14,7 @@ public class TransactionResponse {
     private Long cuentaDestinoId;
     private BigDecimal saldoDisponible;
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters completos
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

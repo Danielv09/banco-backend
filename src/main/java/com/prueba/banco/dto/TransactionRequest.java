@@ -5,19 +5,19 @@ import java.math.BigDecimal;
 
 public class TransactionRequest {
 
-    // Tipo de transacción: CONSIGNACION, RETIRO, TRANSFERENCIA
+
     private TransactionType tipo;
 
-    // Monto de la transacción
+
     private BigDecimal monto;
 
-    // ID de la cuenta origen (solo aplica en RETIRO y TRANSFERENCIA)
+
     private Long cuentaOrigenId;
 
-    // ID de la cuenta destino (solo aplica en CONSIGNACION y TRANSFERENCIA)
+
     private Long cuentaDestinoId;
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters
     public TransactionType getTipo() { return tipo; }
     public void setTipo(TransactionType tipo) { this.tipo = tipo; }
 

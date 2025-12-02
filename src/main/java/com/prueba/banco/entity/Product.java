@@ -9,65 +9,65 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "products") // nombre en inglés para la tabla
+@Table(name = "products")
 public class Product {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    // Tipo de cuenta: AHORROS o CORRIENTE
+
     @Enumerated(EnumType.STRING)
     @Column(name = "tipo_cuenta", nullable = false)
     @NotNull(message = "El tipo de cuenta es obligatorio")
     private TipoCuenta tipoCuenta;
 
-    // Número de cuenta único, 10 dígitos
+
     @Column(name = "numero_cuenta", unique = true, length = 10, nullable = false)
     private String numeroCuenta;
 
-    // Estado de la cuenta
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private EstadoCuenta estado;
 
-    // Saldo de la cuenta
+
     @Column(name = "saldo", precision = 15, scale = 2, nullable = false)
     private BigDecimal saldo;
 
-    // Exención de GMF
+
     @Column(name = "exenta_gmf", nullable = false)
     private Boolean exentaGMF;
 
-    // Auditoría
+
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
     @Column(name = "fecha_modificacion", nullable = false)
     private LocalDateTime fechaModificacion;
 
-    // Relación con cliente
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
     private Client cliente;
 
-    // --- Ciclo de vida ---
+
     @PrePersist
     public void prePersist() {
         this.fechaCreacion = LocalDateTime.now();
         this.fechaModificacion = LocalDateTime.now();
 
-        // Generar número de cuenta automáticamente
+
         if (this.numeroCuenta == null || this.numeroCuenta.isBlank()) {
             this.numeroCuenta = generarNumeroCuenta();
         }
 
-        // Estado por defecto: ACTIVA si no se envía nada
+
         if (this.estado == null) {
             this.estado = EstadoCuenta.ACTIVA;
         }
 
-        // Validar saldo en cuentas de ahorro
+
         if (this.tipoCuenta == TipoCuenta.AHORROS && this.saldo.compareTo(BigDecimal.ZERO) < 0) {
             throw new IllegalArgumentException("La cuenta de ahorros no puede tener saldo menor a 0");
         }
@@ -77,7 +77,7 @@ public class Product {
     public void preUpdate() {
         this.fechaModificacion = LocalDateTime.now();
 
-        // Validar cancelación solo si saldo = 0
+
         if (this.estado == EstadoCuenta.CANCELADA && this.saldo.compareTo(BigDecimal.ZERO) != 0) {
             throw new IllegalArgumentException("Solo se pueden cancelar cuentas con saldo igual a 0");
         }
@@ -89,7 +89,7 @@ public class Product {
         return prefijo + randomDigits;
     }
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters completos
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

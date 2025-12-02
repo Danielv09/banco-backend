@@ -34,10 +34,10 @@ public class ClientRequest {
     @Schema(example = "1990-05-15", description = "Fecha de nacimiento en formato YYYY-MM-DD")
     private LocalDate fechaNacimiento;
 
-    // --- Constructor vacío ---
+
     public ClientRequest() {}
 
-    // --- Constructor completo ---
+
     public ClientRequest(String tipoIdentificacion, String numeroIdentificacion,
                          String nombre, String apellido, String correo,
                          LocalDate fechaNacimiento) {
@@ -49,7 +49,7 @@ public class ClientRequest {
         this.fechaNacimiento = fechaNacimiento;
     }
 
-    // --- Getters y Setters ---
+    // Getters y Setters
     public String getTipoIdentificacion() { return tipoIdentificacion; }
     public void setTipoIdentificacion(String tipoIdentificacion) { this.tipoIdentificacion = tipoIdentificacion; }
 

@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface TransactionService {
 
-    // Consignación (depósito en una cuenta)
+    // Consignación
     TransactionResponse deposit(TransactionRequest req);
 
-    // Retiro (extracción de dinero de una cuenta)
+    // Retiro
     TransactionResponse withdraw(TransactionRequest req);
 
-    // Transferencia (movimiento entre dos cuentas)
+    // Transferencia
     TransactionResponse transfer(TransactionRequest req);
 
-    // Listar transacciones por producto destino
+    // Listar
     List<TransactionResponse> listByProduct(Long productId);
 }

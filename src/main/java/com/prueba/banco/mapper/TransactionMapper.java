@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class TransactionMapper {
 
-    // Convierte un request en una entidad Transaction
+
     public Transaction toEntity(TransactionRequest req, Product origin, Product destination) {
         Transaction tx = new Transaction();
         tx.setTipo(req.getTipo());
@@ -19,7 +19,7 @@ public class TransactionMapper {
         return tx;
     }
 
-    // Convierte una entidad Transaction en un DTO de respuesta
+
     public TransactionResponse toResponse(Transaction entity) {
         TransactionResponse dto = new TransactionResponse();
         dto.setId(entity.getId());

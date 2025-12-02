@@ -17,37 +17,37 @@ public class ProductController {
         this.service = service;
     }
 
-    // Create product (account)
+
     @PostMapping
     public ProductResponse create(@RequestBody ProductRequest req) {
         return service.create(req);
     }
 
-    // List all products
+
     @GetMapping
     public List<ProductResponse> list() {
         return service.list();
     }
 
-    // Get product by ID
+
     @GetMapping("/{id}")
     public ProductResponse getById(@PathVariable Long id) {
         return service.getById(id);
     }
 
-    // Update product
+
     @PutMapping("/{id}")
     public ProductResponse update(@PathVariable Long id, @RequestBody ProductRequest req) {
         return service.update(id, req);
     }
 
-    // Delete product
+
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
         service.delete(id);
     }
 
-    // Change account status (ACTIVO, INACTIVO, CANCELADO, BLOQUEADO)
+
     @PatchMapping("/{id}/estado")
     public ProductResponse cambiarEstado(@PathVariable Long id, @RequestParam String nuevoEstado) {
         return service.cambiarEstado(id, nuevoEstado);

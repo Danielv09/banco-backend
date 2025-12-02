@@ -83,7 +83,7 @@ public class ClientServiceImpl implements ClientService {
         repository.delete(existing);
     }
 
-    // --- Validación de mayoría de edad ---
+
     private void validateAdult(LocalDate fechaNacimiento) {
         if (fechaNacimiento == null) {
             throw new BusinessRuleException("La fecha de nacimiento es obligatoria");

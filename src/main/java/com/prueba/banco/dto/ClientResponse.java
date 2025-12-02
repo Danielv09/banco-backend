@@ -34,10 +34,10 @@ public class ClientResponse {
     @Schema(example = "2025-11-30T15:45:00", description = "Fecha de última modificación del registro")
     private LocalDateTime fechaModificacion;
 
-    // --- Constructor vacío ---
+
     public ClientResponse() {}
 
-    // --- Constructor completo ---
+
     public ClientResponse(Long id, String tipoIdentificacion, String numeroIdentificacion,
                           String nombre, String apellido, String correo,
                           LocalDate fechaNacimiento, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion) {
@@ -52,7 +52,7 @@ public class ClientResponse {
         this.fechaModificacion = fechaModificacion;
     }
 
-    // --- Getters y Setters ---
+    // Getters y Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

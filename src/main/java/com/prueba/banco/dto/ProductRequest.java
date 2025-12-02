@@ -9,7 +9,7 @@ public class ProductRequest {
     private Boolean exentaGMF;
     private Long clienteId;
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters completos
     public TipoCuenta getTipoCuenta() { return tipoCuenta; }
     public void setTipoCuenta(TipoCuenta tipoCuenta) { this.tipoCuenta = tipoCuenta; }
 

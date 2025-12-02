@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ClientMapper {
 
-    // Convierte un ClientRequest (entrada del usuario) en una entity Client
+
     public Client toEntity(ClientRequest req) {
         Client c = new Client();
         c.setTipoIdentificacion(req.getTipoIdentificacion());
@@ -20,7 +20,7 @@ public class ClientMapper {
         return c;
     }
 
-    // Actualiza una entity existente con los datos de un ClientRequest
+
     public void updateEntity(Client target, ClientRequest req) {
         target.setTipoIdentificacion(req.getTipoIdentificacion());
         target.setNumeroIdentificacion(req.getNumeroIdentificacion());
@@ -30,7 +30,7 @@ public class ClientMapper {
         target.setFechaNacimiento(req.getFechaNacimiento());
     }
 
-    // Convierte una entity Client en un ClientResponse (salida hacia el usuario)
+
     public ClientResponse toResponse(Client c) {
         ClientResponse r = new ClientResponse();
         r.setId(c.getId());

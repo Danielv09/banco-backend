@@ -16,7 +16,7 @@ public class ProductResponse {
     private LocalDateTime fechaModificacion;
     private Long clienteId;
 
-    // --- Getters y Setters completos ---
+    // Getters y Setters completos
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 

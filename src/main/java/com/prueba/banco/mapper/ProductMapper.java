@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class ProductMapper {
 
-    // Convierte un request en una entidad Product
+
     public Product toEntity(ProductRequest req, Client cliente) {
         Product p = new Product();
         p.setTipoCuenta(req.getTipoCuenta());
@@ -19,7 +19,7 @@ public class ProductMapper {
         return p;
     }
 
-    // Actualiza una entidad existente con datos del request
+
     public void updateEntity(Product target, ProductRequest req, Client cliente) {
         if (req.getTipoCuenta() != null) target.setTipoCuenta(req.getTipoCuenta());
         if (req.getSaldo() != null) target.setSaldo(req.getSaldo());
@@ -27,7 +27,7 @@ public class ProductMapper {
         if (cliente != null) target.setCliente(cliente);
     }
 
-    // Convierte una entidad en respuesta
+
     public ProductResponse toResponse(Product entity) {
         ProductResponse dto = new ProductResponse();
         dto.setId(entity.getId());

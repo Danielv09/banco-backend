@@ -24,14 +24,14 @@ public class ClientController {
         this.mapper = mapper;
     }
 
-    // --- Crear cliente ---
+
     @PostMapping
     public ResponseEntity<ClientResponse> create(@Valid @RequestBody ClientRequest req) {
         Client created = service.create(req);
         return ResponseEntity.ok(mapper.toResponse(created));
     }
 
-    // --- Listar todos los clientes ---
+
     @GetMapping
     public ResponseEntity<List<ClientResponse>> list() {
         List<ClientResponse> clientes = service.list().stream()
@@ -40,14 +40,14 @@ public class ClientController {
         return ResponseEntity.ok(clientes);
     }
 
-    // --- Obtener cliente por ID ---
+
     @GetMapping("/{id}")
     public ResponseEntity<ClientResponse> getById(@PathVariable Long id) {
         Client cliente = service.getById(id);
         return ResponseEntity.ok(mapper.toResponse(cliente));
     }
 
-    // --- Actualizar cliente ---
+
     @PutMapping("/{id}")
     public ResponseEntity<ClientResponse> update(@PathVariable Long id,
                                                  @Valid @RequestBody ClientRequest req) {
@@ -55,7 +55,7 @@ public class ClientController {
         return ResponseEntity.ok(mapper.toResponse(updated));
     }
 
-    // --- Eliminar cliente ---
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
