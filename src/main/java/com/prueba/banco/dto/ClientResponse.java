@@ -1,63 +1,32 @@
 package com.prueba.banco.dto;
 
+import com.prueba.banco.entity.enums.TipoIdentificacion;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import io.swagger.v3.oas.annotations.media.Schema;
 
-@Schema(description = "DTO de respuesta para clientes")
 public class ClientResponse {
 
-    @Schema(example = "1", description = "Identificador único del cliente")
     private Long id;
-
-    @Schema(example = "CC", description = "Tipo de identificación (CC, TI, Pasaporte, etc.)")
-    private String tipoIdentificacion;
-
-    @Schema(example = "1234567890", description = "Número único de identificación")
+    private TipoIdentificacion tipoIdentificacion;
     private String numeroIdentificacion;
-
-    @Schema(example = "Juan", description = "Nombre del cliente")
     private String nombre;
-
-    @Schema(example = "Pérez", description = "Apellido del cliente")
     private String apellido;
-
-    @Schema(example = "juan.perez@email.com", description = "Correo electrónico único")
     private String correo;
-
-    @Schema(example = "1990-05-15", description = "Fecha de nacimiento en formato YYYY-MM-DD")
     private LocalDate fechaNacimiento;
 
-    @Schema(example = "2025-11-30T15:30:00", description = "Fecha de creación del registro")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime fechaCreacion;
 
-    @Schema(example = "2025-11-30T15:45:00", description = "Fecha de última modificación del registro")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime fechaModificacion;
 
-
-    public ClientResponse() {}
-
-
-    public ClientResponse(Long id, String tipoIdentificacion, String numeroIdentificacion,
-                          String nombre, String apellido, String correo,
-                          LocalDate fechaNacimiento, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion) {
-        this.id = id;
-        this.tipoIdentificacion = tipoIdentificacion;
-        this.numeroIdentificacion = numeroIdentificacion;
-        this.nombre = nombre;
-        this.apellido = apellido;
-        this.correo = correo;
-        this.fechaNacimiento = fechaNacimiento;
-        this.fechaCreacion = fechaCreacion;
-        this.fechaModificacion = fechaModificacion;
-    }
-
-    // Getters y Setters
+    // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getTipoIdentificacion() { return tipoIdentificacion; }
-    public void setTipoIdentificacion(String tipoIdentificacion) { this.tipoIdentificacion = tipoIdentificacion; }
+    public TipoIdentificacion getTipoIdentificacion() { return tipoIdentificacion; }
+    public void setTipoIdentificacion(TipoIdentificacion tipoIdentificacion) { this.tipoIdentificacion = tipoIdentificacion; }
 
     public String getNumeroIdentificacion() { return numeroIdentificacion; }
     public void setNumeroIdentificacion(String numeroIdentificacion) { this.numeroIdentificacion = numeroIdentificacion; }

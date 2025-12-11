@@ -1,12 +1,11 @@
 package com.prueba.banco.repository;
 
-import com.prueba.banco.entity.Product;
+import com.prueba.banco.entity.ProductEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
-
-public interface ProductRepository extends JpaRepository<Product, Long> {
+@Repository
+public interface ProductRepository extends JpaRepository<ProductEntity, Long> {
+    long countByCliente_Id(Long clienteId);
     boolean existsByNumeroCuenta(String numeroCuenta);
-    Optional<Product> findByNumeroCuenta(String numeroCuenta);
-    boolean existsByClienteId(Long clienteId);
 }

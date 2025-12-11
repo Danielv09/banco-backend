@@ -1,8 +1,7 @@
-package com.prueba.banco.enums;
+package com.prueba.banco.entity.enums;
 
 public enum EstadoCuenta {
     ACTIVA,
     INACTIVA,
-    CANCELADA,
     BLOQUEADA
 }

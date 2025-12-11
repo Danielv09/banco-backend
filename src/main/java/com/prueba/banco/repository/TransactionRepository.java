@@ -1,12 +1,9 @@
 package com.prueba.banco.repository;
 
-import com.prueba.banco.entity.Transaction;
+import com.prueba.banco.entity.TransactionEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-import java.util.List;
-
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
-
-
-    List<Transaction> findByCuentaDestinoId(Long productId);
+@Repository
+public interface TransactionRepository extends JpaRepository<TransactionEntity, Long> {
 }

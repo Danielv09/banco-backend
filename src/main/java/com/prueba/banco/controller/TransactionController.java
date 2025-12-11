@@ -3,14 +3,14 @@ package com.prueba.banco.controller;
 import com.prueba.banco.dto.TransactionRequest;
 import com.prueba.banco.dto.TransactionResponse;
 import com.prueba.banco.service.TransactionService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/transacciones")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -19,31 +19,19 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-
-    @PostMapping("/deposit")
-    public ResponseEntity<TransactionResponse> deposit(@Valid @RequestBody TransactionRequest request) {
-        TransactionResponse resp = transactionService.deposit(request);
-        return ResponseEntity.ok(resp);
+    @PostMapping
+    public ResponseEntity<TransactionResponse> crear(@Valid @RequestBody TransactionRequest request) {
+        TransactionResponse response = transactionService.crearTransaccion(request);
+        return ResponseEntity.status(201).body(response);
     }
 
-
-    @PostMapping("/withdraw")
-    public ResponseEntity<TransactionResponse> withdraw(@Valid @RequestBody TransactionRequest request) {
-        TransactionResponse resp = transactionService.withdraw(request);
-        return ResponseEntity.ok(resp);
+    @GetMapping("/{id}")
+    public ResponseEntity<TransactionResponse> obtener(@PathVariable Long id) {
+        return ResponseEntity.ok(transactionService.obtenerTransaccionPorId(id));
     }
 
-
-    @PostMapping("/transfer")
-    public ResponseEntity<TransactionResponse> transfer(@Valid @RequestBody TransactionRequest request) {
-        TransactionResponse resp = transactionService.transfer(request);
-        return ResponseEntity.ok(resp);
-    }
-
-
-    @GetMapping("/product/{productId}")
-    public ResponseEntity<List<TransactionResponse>> listByProduct(@PathVariable Long productId) {
-        List<TransactionResponse> list = transactionService.listByProduct(productId);
-        return ResponseEntity.ok(list);
+    @GetMapping
+    public ResponseEntity<List<TransactionResponse>> listar() {
+        return ResponseEntity.ok(transactionService.listarTransacciones());
     }
 }

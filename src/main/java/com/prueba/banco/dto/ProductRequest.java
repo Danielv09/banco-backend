@@ -1,23 +1,31 @@
 package com.prueba.banco.dto;
 
-import com.prueba.banco.enums.TipoCuenta;
+import com.prueba.banco.entity.enums.TipoCuenta;
+import jakarta.validation.constraints.*;
 import java.math.BigDecimal;
 
 public class ProductRequest {
+
+    @NotNull(message = "El tipo de cuenta es obligatorio")
     private TipoCuenta tipoCuenta;
+
+    @NotNull(message = "El saldo inicial es obligatorio")
+    @DecimalMin(value = "0.0", inclusive = true, message = "El saldo no puede ser negativo")
     private BigDecimal saldo;
-    private Boolean exentaGMF;
+
+
+
+    @NotNull(message = "El cliente es obligatorio")
     private Long clienteId;
 
-    // Getters y Setters completos
+    // Getters y setters
     public TipoCuenta getTipoCuenta() { return tipoCuenta; }
     public void setTipoCuenta(TipoCuenta tipoCuenta) { this.tipoCuenta = tipoCuenta; }
 
     public BigDecimal getSaldo() { return saldo; }
     public void setSaldo(BigDecimal saldo) { this.saldo = saldo; }
 
-    public Boolean getExentaGMF() { return exentaGMF; }
-    public void setExentaGMF(Boolean exentaGMF) { this.exentaGMF = exentaGMF; }
+
 
     public Long getClienteId() { return clienteId; }
     public void setClienteId(Long clienteId) { this.clienteId = clienteId; }

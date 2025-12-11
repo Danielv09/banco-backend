@@ -1,26 +1,30 @@
 package com.prueba.banco.entity;
 
+import com.prueba.banco.entity.enums.TipoIdentificacion;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 @Entity
-@Table(name = "clientes")
+@Table(name = "clients")
 @Schema(description = "Entidad que representa un cliente del banco")
-public class Client {
+public class ClientEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Schema(hidden = true)
     private Long id;
 
-    @NotBlank(message = "El tipo de identificación no puede estar vacío")
+    @NotNull(message = "El tipo de identificación es obligatorio")
+    @Enumerated(EnumType.STRING)
     @Column(name = "tipo_identificacion", nullable = false)
-    private String tipoIdentificacion;
+    private TipoIdentificacion tipoIdentificacion;
 
     @NotBlank(message = "El número de identificación no puede estar vacío")
+    @Pattern(regexp = "^[0-9]+$", message = "El número de identificación solo debe contener dígitos")
     @Column(name = "numero_identificacion", unique = true, nullable = false)
     private String numeroIdentificacion;
 
@@ -43,19 +47,21 @@ public class Client {
     @Column(name = "fecha_nacimiento", nullable = false)
     private LocalDate fechaNacimiento;
 
-    @Schema(hidden = true) // Oculta en Swagger
+    @Schema(hidden = true)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "fecha_creacion")
     private LocalDateTime fechaCreacion;
 
-    @Schema(hidden = true) // Oculta en Swagger
+    @Schema(hidden = true)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     @Column(name = "fecha_modificacion")
     private LocalDateTime fechaModificacion;
 
-    public Client() {}
+    public ClientEntity() {}
 
-    public Client(Long id, String tipoIdentificacion, String numeroIdentificacion,
-                  String nombre, String apellido, String correo,
-                  LocalDate fechaNacimiento, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion) {
+    public ClientEntity(Long id, TipoIdentificacion tipoIdentificacion, String numeroIdentificacion,
+                        String nombre, String apellido, String correo,
+                        LocalDate fechaNacimiento, LocalDateTime fechaCreacion, LocalDateTime fechaModificacion) {
         this.id = id;
         this.tipoIdentificacion = tipoIdentificacion;
         this.numeroIdentificacion = numeroIdentificacion;
@@ -78,12 +84,12 @@ public class Client {
         this.fechaModificacion = LocalDateTime.now();
     }
 
-    // Getters y Setters
+    // Getters y setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
 
-    public String getTipoIdentificacion() { return tipoIdentificacion; }
-    public void setTipoIdentificacion(String tipoIdentificacion) { this.tipoIdentificacion = tipoIdentificacion; }
+    public TipoIdentificacion getTipoIdentificacion() { return tipoIdentificacion; }
+    public void setTipoIdentificacion(TipoIdentificacion tipoIdentificacion) { this.tipoIdentificacion = tipoIdentificacion; }
 
     public String getNumeroIdentificacion() { return numeroIdentificacion; }
     public void setNumeroIdentificacion(String numeroIdentificacion) { this.numeroIdentificacion = numeroIdentificacion; }
