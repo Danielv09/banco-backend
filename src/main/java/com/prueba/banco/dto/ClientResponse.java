@@ -2,6 +2,8 @@ package com.prueba.banco.dto;
 
 import com.prueba.banco.entity.enums.TipoIdentificacion;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -9,7 +11,10 @@ public class ClientResponse {
 
     private Long id;
     private TipoIdentificacion tipoIdentificacion;
+
+    @Size(max = 10, message = "El número de identificación no puede superar los 10 dígitos")
     private String numeroIdentificacion;
+
     private String nombre;
     private String apellido;
     private String correo;

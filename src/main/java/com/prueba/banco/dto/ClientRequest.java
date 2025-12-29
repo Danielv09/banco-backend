@@ -11,6 +11,7 @@ public class ClientRequest {
 
     @NotBlank(message = "El número de identificación no puede estar vacío")
     @Pattern(regexp = "^[0-9]+$", message = "El número de identificación solo debe contener dígitos")
+    @Size(max = 10, message = "El número de identificación no puede superar los 10 dígitos")
     private String numeroIdentificacion;
 
     @NotBlank(message = "El nombre no puede estar vacío")

@@ -11,6 +11,7 @@ import com.prueba.banco.exception.NotFoundException;
 import com.prueba.banco.repository.ProductRepository;
 import com.prueba.banco.repository.TransactionRepository;
 import com.prueba.banco.service.TransactionService;
+import com.prueba.banco.util.mapper.TransactionMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,7 +38,10 @@ public class TransactionServiceImpl implements TransactionService {
         entity.setTipo(request.getTipo());
         entity.setMonto(request.getMonto());
 
-        if (request.getTipo() == TipoTransaccion.CONSIGNACION) {
+        if (request.getTipo() == TipoTransaccion.DEPOSITO) {
+            // Ignorar productoOrigenId si viene en el request
+            request.setProductoOrigenId(null);
+
             ProductEntity destino = productRepository.findById(request.getProductoDestinoId())
                     .orElseThrow(() -> new NotFoundException("Cuenta destino no encontrada"));
             validarProductoActivo(destino);
@@ -98,21 +102,21 @@ public class TransactionServiceImpl implements TransactionService {
         }
 
         TransactionEntity saved = transactionRepository.save(entity);
-        return mapToResponse(saved);
+        return TransactionMapper.toResponse(saved);
     }
 
     @Override
     public TransactionResponse obtenerTransaccionPorId(Long id) {
         TransactionEntity entity = transactionRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Transacción no encontrada"));
-        return mapToResponse(entity);
+        return TransactionMapper.toResponse(entity);
     }
 
     @Override
     public List<TransactionResponse> listarTransacciones() {
         return transactionRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(TransactionMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -124,9 +128,12 @@ public class TransactionServiceImpl implements TransactionService {
             throw new BusinessException("El monto debe ser mayor a cero");
         }
 
-        if (request.getTipo() == TipoTransaccion.CONSIGNACION) {
+        if (request.getTipo() == TipoTransaccion.DEPOSITO) {
             if (request.getProductoDestinoId() == null) {
                 throw new BusinessException("La cuenta destino es obligatoria para una consignación");
+            }
+            if (request.getProductoOrigenId() != null) {
+                throw new BusinessException("En una consignación no debe enviarse cuenta origen");
             }
         } else if (request.getTipo() == TipoTransaccion.RETIRO) {
             if (request.getProductoOrigenId() == null) {
@@ -146,23 +153,5 @@ public class TransactionServiceImpl implements TransactionService {
         if (producto.getEstado() != EstadoCuenta.ACTIVA) {
             throw new BusinessException("No se puede operar con una cuenta " + producto.getEstado());
         }
-    }
-
-    private TransactionResponse mapToResponse(TransactionEntity entity) {
-        TransactionResponse r = new TransactionResponse();
-        r.setId(entity.getId());
-        r.setTipo(entity.getTipo());
-        r.setMonto(entity.getMonto());
-        r.setProductoOrigenId(entity.getProductoOrigen() != null ? entity.getProductoOrigen().getId() : null);
-        r.setProductoDestinoId(entity.getProductoDestino() != null ? entity.getProductoDestino().getId() : null);
-        r.setFecha(entity.getFecha());
-
-        // Mapear saldos desde la entidad
-        r.setSaldoOrigen(entity.getSaldoOrigen());
-        r.setSaldoDisponibleOrigen(entity.getSaldoDisponibleOrigen());
-        r.setSaldoDestino(entity.getSaldoDestino());
-        r.setSaldoDisponibleDestino(entity.getSaldoDisponibleDestino());
-
-        return r;
     }
 }

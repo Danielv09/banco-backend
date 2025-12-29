@@ -5,6 +5,7 @@ import com.prueba.banco.dto.ClientResponse;
 import com.prueba.banco.entity.ClientEntity;
 import com.prueba.banco.exception.BusinessException;
 import com.prueba.banco.exception.NotFoundException;
+import com.prueba.banco.util.mapper.ClientMapper;
 import com.prueba.banco.repository.ClientRepository;
 import com.prueba.banco.repository.ProductRepository;
 import com.prueba.banco.service.ClientService;
@@ -37,31 +38,25 @@ public class ClientServiceImpl implements ClientService {
         }
 
         validarMayorDeEdad(request.getFechaNacimiento());
+        validarNumeroIdentificacion(request.getNumeroIdentificacion());
 
-        ClientEntity entity = new ClientEntity();
-        entity.setTipoIdentificacion(request.getTipoIdentificacion());
-        entity.setNumeroIdentificacion(request.getNumeroIdentificacion());
-        entity.setNombre(request.getNombre());
-        entity.setApellido(request.getApellido());
-        entity.setCorreo(request.getCorreo());
-        entity.setFechaNacimiento(request.getFechaNacimiento());
-
+        ClientEntity entity = ClientMapper.toEntity(request); // 👈 usar mapper
         ClientEntity saved = clientRepository.save(entity);
-        return mapToResponse(saved);
+        return ClientMapper.toResponse(saved); // 👈 usar mapper
     }
 
     @Override
     public ClientResponse obtenerClientePorId(Long id) {
         ClientEntity entity = clientRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Cliente no encontrado"));
-        return mapToResponse(entity);
+        return ClientMapper.toResponse(entity); // 👈 usar mapper
     }
 
     @Override
     public List<ClientResponse> listarClientes() {
         return clientRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(ClientMapper::toResponse) // 👈 usar mapper
                 .collect(Collectors.toList());
     }
 
@@ -77,6 +72,7 @@ public class ClientServiceImpl implements ClientService {
         }
 
         validarMayorDeEdad(request.getFechaNacimiento());
+        validarNumeroIdentificacion(request.getNumeroIdentificacion());
 
         entity.setTipoIdentificacion(request.getTipoIdentificacion());
         entity.setNumeroIdentificacion(request.getNumeroIdentificacion());
@@ -86,7 +82,7 @@ public class ClientServiceImpl implements ClientService {
         entity.setFechaNacimiento(request.getFechaNacimiento());
 
         ClientEntity updated = clientRepository.save(entity);
-        return mapToResponse(updated);
+        return ClientMapper.toResponse(updated); // 👈 usar mapper
     }
 
     @Override
@@ -116,17 +112,15 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    private ClientResponse mapToResponse(ClientEntity entity) {
-        ClientResponse r = new ClientResponse();
-        r.setId(entity.getId());
-        r.setTipoIdentificacion(entity.getTipoIdentificacion());
-        r.setNumeroIdentificacion(entity.getNumeroIdentificacion());
-        r.setNombre(entity.getNombre());
-        r.setApellido(entity.getApellido());
-        r.setCorreo(entity.getCorreo());
-        r.setFechaNacimiento(entity.getFechaNacimiento());
-        r.setFechaCreacion(entity.getFechaCreacion());
-        r.setFechaModificacion(entity.getFechaModificacion());
-        return r;
+    private void validarNumeroIdentificacion(String numeroIdentificacion) {
+        if (numeroIdentificacion == null || numeroIdentificacion.isBlank()) {
+            throw new BusinessException("El número de identificación no puede estar vacío");
+        }
+        if (!numeroIdentificacion.matches("^[0-9]+$")) {
+            throw new BusinessException("El número de identificación solo debe contener dígitos");
+        }
+        if (numeroIdentificacion.length() > 10) {
+            throw new BusinessException("El número de identificación no puede superar los 10 dígitos");
+        }
     }
 }

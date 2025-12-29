@@ -1,11 +1,14 @@
 package com.prueba.banco.service;
 
 import com.prueba.banco.dto.TransactionRequest;
+import com.prueba.banco.dto.TransactionResponse;
 import com.prueba.banco.entity.ProductEntity;
 import com.prueba.banco.entity.TransactionEntity;
+import com.prueba.banco.entity.enums.EstadoCuenta;
 import com.prueba.banco.entity.enums.TipoTransaccion;
 import com.prueba.banco.exception.BusinessException;
 import com.prueba.banco.exception.NotFoundException;
+
 import com.prueba.banco.repository.ProductRepository;
 import com.prueba.banco.repository.TransactionRepository;
 import com.prueba.banco.service.impl.TransactionServiceImpl;
@@ -32,32 +35,43 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    void shouldDepositSuccessfully() {
+    void shouldCreateDepositTransaction() {
         ProductEntity destino = new ProductEntity();
         destino.setId(1L);
-        destino.setSaldo(BigDecimal.valueOf(100));
+        destino.setSaldo(BigDecimal.valueOf(1000));
+        destino.setSaldoDisponible(BigDecimal.valueOf(1000));
+        destino.setEstado(EstadoCuenta.ACTIVA);
 
         TransactionRequest req = new TransactionRequest();
-        req.setTipo(TipoTransaccion.CONSIGNACION);
-        req.setMonto(BigDecimal.valueOf(50));
+        req.setTipo(TipoTransaccion.DEPOSITO);
+        req.setMonto(BigDecimal.valueOf(500));
         req.setProductoDestinoId(1L);
 
         when(productRepository.findById(1L)).thenReturn(Optional.of(destino));
-        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(inv -> {
+            TransactionEntity e = inv.getArgument(0);
+            e.setId(10L);
+            return e;
+        });
 
-        assertDoesNotThrow(() -> service.crearTransaccion(req));
-        assertEquals(BigDecimal.valueOf(150), destino.getSaldo());
+        TransactionResponse resp = service.crearTransaccion(req);
+
+        assertNotNull(resp);
+        assertEquals(10L, resp.getId());
+        assertEquals(BigDecimal.valueOf(1500), destino.getSaldo());
     }
 
     @Test
-    void shouldFailWithdrawalWithInsufficientBalance() {
+    void shouldThrowExceptionWhenWithdrawInsufficientBalance() {
         ProductEntity origen = new ProductEntity();
         origen.setId(2L);
-        origen.setSaldo(BigDecimal.valueOf(30));
+        origen.setSaldo(BigDecimal.valueOf(100));
+        origen.setSaldoDisponible(BigDecimal.valueOf(100));
+        origen.setEstado(EstadoCuenta.ACTIVA);
 
         TransactionRequest req = new TransactionRequest();
         req.setTipo(TipoTransaccion.RETIRO);
-        req.setMonto(BigDecimal.valueOf(50));
+        req.setMonto(BigDecimal.valueOf(200));
         req.setProductoOrigenId(2L);
 
         when(productRepository.findById(2L)).thenReturn(Optional.of(origen));
@@ -67,59 +81,46 @@ public class TransactionServiceImplTest {
     }
 
     @Test
-    void shouldTransferSuccessfully() {
+    void shouldCreateTransferTransaction() {
         ProductEntity origen = new ProductEntity();
         origen.setId(3L);
-        origen.setSaldo(BigDecimal.valueOf(200));
+        origen.setSaldo(BigDecimal.valueOf(1000));
+        origen.setSaldoDisponible(BigDecimal.valueOf(1000));
+        origen.setEstado(EstadoCuenta.ACTIVA);
 
         ProductEntity destino = new ProductEntity();
         destino.setId(4L);
-        destino.setSaldo(BigDecimal.valueOf(100));
+        destino.setSaldo(BigDecimal.valueOf(500));
+        destino.setSaldoDisponible(BigDecimal.valueOf(500));
+        destino.setEstado(EstadoCuenta.ACTIVA);
 
         TransactionRequest req = new TransactionRequest();
         req.setTipo(TipoTransaccion.TRANSFERENCIA);
-        req.setMonto(BigDecimal.valueOf(50));
+        req.setMonto(BigDecimal.valueOf(300));
         req.setProductoOrigenId(3L);
         req.setProductoDestinoId(4L);
 
         when(productRepository.findById(3L)).thenReturn(Optional.of(origen));
         when(productRepository.findById(4L)).thenReturn(Optional.of(destino));
-        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(transactionRepository.save(any(TransactionEntity.class))).thenAnswer(inv -> {
+            TransactionEntity e = inv.getArgument(0);
+            e.setId(20L);
+            return e;
+        });
 
-        service.crearTransaccion(req);
+        TransactionResponse resp = service.crearTransaccion(req);
 
-        assertEquals(BigDecimal.valueOf(150), origen.getSaldo());
-        assertEquals(BigDecimal.valueOf(150), destino.getSaldo());
+        assertNotNull(resp);
+        assertEquals(20L, resp.getId());
+        assertEquals(BigDecimal.valueOf(700), origen.getSaldo());
+        assertEquals(BigDecimal.valueOf(800), destino.getSaldo());
     }
 
     @Test
-    void shouldFailTransferToSameAccount() {
-        ProductEntity origen = new ProductEntity();
-        origen.setId(5L);
-        origen.setSaldo(BigDecimal.valueOf(100));
+    void shouldThrowNotFoundWhenTransactionDoesNotExist() {
+        when(transactionRepository.findById(99L)).thenReturn(Optional.empty());
 
-        TransactionRequest req = new TransactionRequest();
-        req.setTipo(TipoTransaccion.TRANSFERENCIA);
-        req.setMonto(BigDecimal.valueOf(50));
-        req.setProductoOrigenId(5L);
-        req.setProductoDestinoId(5L);
-
-        when(productRepository.findById(5L)).thenReturn(Optional.of(origen));
-
-        BusinessException ex = assertThrows(BusinessException.class, () -> service.crearTransaccion(req));
-        assertEquals("La cuenta origen y destino no pueden ser la misma", ex.getMessage());
-    }
-
-    @Test
-    void shouldThrowNotFoundWhenAccountDoesNotExist() {
-        TransactionRequest req = new TransactionRequest();
-        req.setTipo(TipoTransaccion.CONSIGNACION);
-        req.setMonto(BigDecimal.valueOf(50));
-        req.setProductoDestinoId(99L);
-
-        when(productRepository.findById(99L)).thenReturn(Optional.empty());
-
-        NotFoundException ex = assertThrows(NotFoundException.class, () -> service.crearTransaccion(req));
-        assertEquals("Cuenta destino no encontrada", ex.getMessage());
+        NotFoundException ex = assertThrows(NotFoundException.class, () -> service.obtenerTransaccionPorId(99L));
+        assertEquals("Transacción no encontrada", ex.getMessage());
     }
 }

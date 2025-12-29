@@ -82,22 +82,22 @@ public class ProductServiceImplTest {
     }
 
     @Test
-    void shouldNotDeleteProductWithBalance() {
+    void shouldNotDeleteProductWithBalanceDisponible() {
         ProductEntity entity = new ProductEntity();
         entity.setId(5L);
-        entity.setSaldo(BigDecimal.valueOf(200));
+        entity.setSaldoDisponible(BigDecimal.valueOf(200)); // ✅ usar saldoDisponible
 
         when(productRepository.findById(5L)).thenReturn(Optional.of(entity));
 
         BusinessException ex = assertThrows(BusinessException.class, () -> service.eliminarProducto(5L));
-        assertEquals("No se puede eliminar una cuenta con saldo mayor a cero", ex.getMessage());
+        assertEquals("Solo se pueden cancelar cuentas con saldo disponible igual a 0", ex.getMessage());
     }
 
     @Test
-    void shouldDeleteProductWithZeroBalance() {
+    void shouldDeleteProductWithZeroBalanceDisponible() {
         ProductEntity entity = new ProductEntity();
         entity.setId(6L);
-        entity.setSaldo(BigDecimal.ZERO);
+        entity.setSaldoDisponible(BigDecimal.ZERO); // ✅ usar saldoDisponible
 
         when(productRepository.findById(6L)).thenReturn(Optional.of(entity));
 

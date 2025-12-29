@@ -11,6 +11,7 @@ import com.prueba.banco.exception.NotFoundException;
 import com.prueba.banco.repository.ClientRepository;
 import com.prueba.banco.repository.ProductRepository;
 import com.prueba.banco.service.ProductService;
+import com.prueba.banco.util.mapper.ProductMapper;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -36,33 +37,26 @@ public class ProductServiceImpl implements ProductService {
 
         validarSaldoNoNegativo(request.getSaldo());
 
-        ProductEntity entity = new ProductEntity();
+        ProductEntity entity = ProductMapper.toEntity(request, cliente);
         entity.setNumeroCuenta(generarNumeroCuenta(request.getTipoCuenta()));
-        entity.setTipoCuenta(request.getTipoCuenta());
-
-        // Regla: cuentas se crean activas por defecto
         entity.setEstado(EstadoCuenta.ACTIVA);
 
-        entity.setSaldo(request.getSaldo());
-        entity.setSaldoDisponible(request.getSaldo());
-        entity.setCliente(cliente);
-
         ProductEntity saved = productRepository.save(entity);
-        return mapToResponse(saved);
+        return ProductMapper.toResponse(saved);
     }
 
     @Override
     public ProductResponse obtenerProductoPorId(Long id) {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
-        return mapToResponse(entity);
+        return ProductMapper.toResponse(entity);
     }
 
     @Override
     public List<ProductResponse> listarProductos() {
         return productRepository.findAll()
                 .stream()
-                .map(this::mapToResponse)
+                .map(ProductMapper::toResponse)
                 .collect(Collectors.toList());
     }
 
@@ -81,8 +75,9 @@ public class ProductServiceImpl implements ProductService {
         entity.setSaldoDisponible(request.getSaldo());
         entity.setCliente(cliente);
 
+
         ProductEntity updated = productRepository.save(entity);
-        return mapToResponse(updated);
+        return ProductMapper.toResponse(updated);
     }
 
     @Override
@@ -90,8 +85,9 @@ public class ProductServiceImpl implements ProductService {
         ProductEntity entity = productRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
 
-        if (entity.getSaldo() != null && entity.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
-            throw new BusinessException("Solo se pueden cancelar cuentas con saldo igual a 0");
+
+        if (entity.getSaldoDisponible() != null && entity.getSaldoDisponible().compareTo(BigDecimal.ZERO) > 0) {
+            throw new BusinessException("Solo se pueden cancelar cuentas con saldo disponible igual a 0");
         }
         productRepository.delete(entity);
     }
@@ -102,16 +98,17 @@ public class ProductServiceImpl implements ProductService {
                 .orElseThrow(() -> new NotFoundException("Producto no encontrado"));
 
 
-        if (nuevoEstado == EstadoCuenta.INACTIVA && entity.getSaldo().compareTo(BigDecimal.ZERO) > 0) {
-            throw new BusinessException("No se puede inactivar una cuenta con saldo mayor a 0");
+        if (nuevoEstado == EstadoCuenta.INACTIVA &&
+                entity.getSaldoDisponible() != null &&
+                entity.getSaldoDisponible().compareTo(BigDecimal.ZERO) > 0) {
+            throw new BusinessException("No se puede inactivar una cuenta con saldo disponible mayor a 0");
         }
 
         entity.setEstado(nuevoEstado);
         ProductEntity updated = productRepository.save(entity);
-        return mapToResponse(updated);
+        return ProductMapper.toResponse(updated);
     }
 
-    // Generador de número de cuenta con prefijo y 10 dígitos
     private String generarNumeroCuenta(TipoCuenta tipoCuenta) {
         String prefijo = tipoCuenta == TipoCuenta.AHORROS ? "53" : "33";
         String numeroCuenta;
@@ -135,19 +132,5 @@ public class ProductServiceImpl implements ProductService {
         if (saldo.compareTo(BigDecimal.ZERO) < 0) {
             throw new BusinessException("El saldo no puede ser negativo");
         }
-    }
-
-    private ProductResponse mapToResponse(ProductEntity entity) {
-        ProductResponse r = new ProductResponse();
-        r.setId(entity.getId());
-        r.setNumeroCuenta(entity.getNumeroCuenta());
-        r.setTipoCuenta(entity.getTipoCuenta());
-        r.setEstado(entity.getEstado());
-        r.setSaldo(entity.getSaldo());
-        r.setSaldoDisponible(entity.getSaldoDisponible());
-        r.setClienteId(entity.getCliente() != null ? entity.getCliente().getId() : null);
-        r.setFechaCreacion(entity.getFechaCreacion());
-        r.setFechaModificacion(entity.getFechaModificacion());
-        return r;
     }
 }

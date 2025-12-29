@@ -4,7 +4,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
-import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -23,9 +22,12 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex) {
+        // Tomamos solo el primer error de validación
         String msg = ex.getBindingResult().getFieldErrors().stream()
+                .findFirst()
                 .map(err -> err.getField() + ": " + err.getDefaultMessage())
-                .collect(Collectors.joining(", "));
+                .orElse("Error de validación");
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(400, "Bad Request", msg));
     }

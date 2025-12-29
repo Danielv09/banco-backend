@@ -25,7 +25,8 @@ public class ClientEntity {
 
     @NotBlank(message = "El número de identificación no puede estar vacío")
     @Pattern(regexp = "^[0-9]+$", message = "El número de identificación solo debe contener dígitos")
-    @Column(name = "numero_identificacion", unique = true, nullable = false)
+    @Size(max = 10, message = "El número de identificación no puede superar los 10 dígitos")
+    @Column(name = "numero_identificacion", unique = true, nullable = false, length = 10)
     private String numeroIdentificacion;
 
     @NotBlank(message = "El nombre no puede estar vacío")
